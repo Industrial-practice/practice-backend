@@ -22,12 +22,7 @@ def get_user(user_id: int, db: Session = Depends(get_db)):
     return user_service.get_user_by_id(db, user_id)
 
 
-@router.post("/", response_model=UserRead)
-def create_user(
-    user: UserCreate,
-    db: Session = Depends(get_db)
-):
-    return user_service.create_user(db, user)
+
 
 
 @router.put("/{user_id}", response_model=UserRead)

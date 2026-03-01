@@ -1,4 +1,6 @@
 from fastapi import APIRouter
+
+from . import auth
 from .providers import router as providers_router
 from .organizations import router as organizations_router
 from .employees import router as employees_router
@@ -15,7 +17,7 @@ from .user_roles import router as user_roles_router
 
 router = APIRouter()
 
-
+router.include_router(auth.router)
 router.include_router(providers_router)
 router.include_router(organizations_router)
 router.include_router(org_units_router)
