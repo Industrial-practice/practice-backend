@@ -1,12 +1,12 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, Dict, Any
 
 
 class ProviderBase(BaseModel):
     name: str
     bin: str
     legal_address: Optional[str] = None
-    contacts_json: Optional[str] = None
+    contacts_json: Optional[Dict[str, Any]] = None
 
 
 class ProviderCreate(ProviderBase):
@@ -16,7 +16,7 @@ class ProviderCreate(ProviderBase):
 class ProviderUpdate(BaseModel):
     name: Optional[str]
     legal_address: Optional[str]
-    contacts_json: Optional[str]
+    contacts_json: Optional[Dict[str, Any]] = None
     is_active: Optional[bool]
 
 class ProviderRead(ProviderBase):

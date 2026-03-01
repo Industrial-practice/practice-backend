@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, Boolean, DateTime
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.sql import func
 from app.db.session import Base
 
@@ -10,7 +11,7 @@ class Provider(Base):
     name = Column(String, nullable=False)
     bin = Column(String, unique=True, index=True, nullable=False)
     legal_address = Column(String, nullable=True)
-    contacts_json = Column(String, nullable=True)
+    contacts_json = Column(JSONB, nullable=True)
 
     is_active = Column(Boolean, default=True)
 
