@@ -4,7 +4,8 @@ from sqlalchemy import pool
 from alembic import context
 import sys
 import os
-
+from app.db.session import Base
+import app.models
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
 
