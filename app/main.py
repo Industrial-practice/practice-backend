@@ -1,7 +1,8 @@
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
+
 from app.core.config import settings
 from app.api.routes import router as api_router
+from app.middlewares.setup import add_middlewares
 
 def create_app() -> FastAPI:
 
@@ -12,13 +13,7 @@ def create_app() -> FastAPI:
         redoc_url="/redoc"
     )
 
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=settings.cors_origins_list,
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
+    add_middlewares(app)
 
     @app.get("/health")
     def health_check():
