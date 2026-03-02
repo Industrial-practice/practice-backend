@@ -1,10 +1,12 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
+from datetime import datetime
 
 
 class RoleBase(BaseModel):
-    code: str
-    name: str
+    code: str = Field(..., max_length=50)
+    name: str = Field(..., max_length=255)
+    description: Optional[str] = Field(None, max_length=500)
 
 
 class RoleCreate(RoleBase):
@@ -12,12 +14,23 @@ class RoleCreate(RoleBase):
 
 
 class RoleUpdate(BaseModel):
-    code: Optional[str] = None
-    name: Optional[str] = None
+    code: Optional[str] = Field(None, max_length=50)
+    name: Optional[str] = Field(None, max_length=255)
+    description: Optional[str] = Field(None, max_length=500)
+    is_active: Optional[bool] = None
 
 
-class RoleRead(RoleBase):
+class RoleRead(BaseModel):
     id: int
+
+    code: str
+    name: str
+    description: Optional[str]
+
+    is_active: bool
+
+    created_at: datetime
+    updated_at: Optional[datetime]
 
     class Config:
         from_attributes = True

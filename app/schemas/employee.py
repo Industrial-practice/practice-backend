@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 from typing import Optional
 from datetime import datetime
 
@@ -6,15 +6,18 @@ from datetime import datetime
 class EmployeeBase(BaseModel):
     organization_id: int
     org_unit_id: Optional[int] = None
-    employee_number: str
 
-    first_name: str
-    last_name: str
-    middle_name: Optional[str] = None
+    employee_number: str = Field(..., max_length=50)
+
+    first_name: str = Field(..., max_length=100)
+    last_name: str = Field(..., max_length=100)
+    middle_name: Optional[str] = Field(None, max_length=100)
 
     email: Optional[EmailStr] = None
-    phone: Optional[str] = None
-    position: Optional[str] = None
+    phone: Optional[str] = Field(None, max_length=50)
+
+    position: Optional[str] = Field(None, max_length=255)
+    grade: Optional[str] = Field(None, max_length=100)
 
 
 class EmployeeCreate(EmployeeBase):
@@ -24,24 +27,44 @@ class EmployeeCreate(EmployeeBase):
 class EmployeeUpdate(BaseModel):
     organization_id: Optional[int] = None
     org_unit_id: Optional[int] = None
-    employee_number: Optional[str] = None
 
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
-    middle_name: Optional[str] = None
+    employee_number: Optional[str] = Field(None, max_length=50)
+
+    first_name: Optional[str] = Field(None, max_length=100)
+    last_name: Optional[str] = Field(None, max_length=100)
+    middle_name: Optional[str] = Field(None, max_length=100)
 
     email: Optional[EmailStr] = None
-    phone: Optional[str] = None
-    position: Optional[str] = None
+    phone: Optional[str] = Field(None, max_length=50)
+
+    position: Optional[str] = Field(None, max_length=255)
+    grade: Optional[str] = Field(None, max_length=100)
 
     is_active: Optional[bool] = None
 
 
-class EmployeeRead(EmployeeBase):
+class EmployeeRead(BaseModel):
     id: int
+
+    organization_id: int
+    org_unit_id: Optional[int]
+
+    employee_number: str
+
+    first_name: str
+    last_name: str
+    middle_name: Optional[str]
+
+    email: Optional[EmailStr]
+    phone: Optional[str]
+
+    position: Optional[str]
+    grade: Optional[str]
+
     is_active: bool
-    created_at: Optional[datetime]
-    updated_at: Optional[datetime] = None
+
+    created_at: datetime
+    updated_at: Optional[datetime]
 
     class Config:
         from_attributes = True

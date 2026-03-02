@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 from datetime import datetime
 
@@ -6,8 +6,10 @@ from datetime import datetime
 class OrgUnitBase(BaseModel):
     organization_id: int
     parent_id: Optional[int] = None
-    name: str
-    code: Optional[str] = None
+
+    name: str = Field(..., max_length=255)
+    code: Optional[str] = Field(None, max_length=50)
+
     manager_employee_id: Optional[int] = None
 
 
@@ -18,14 +20,26 @@ class OrgUnitCreate(OrgUnitBase):
 class OrgUnitUpdate(BaseModel):
     organization_id: Optional[int] = None
     parent_id: Optional[int] = None
-    name: Optional[str] = None
-    code: Optional[str] = None
+
+    name: Optional[str] = Field(None, max_length=255)
+    code: Optional[str] = Field(None, max_length=50)
+
     manager_employee_id: Optional[int] = None
 
 
-class OrgUnitRead(OrgUnitBase):
+class OrgUnitRead(BaseModel):
     id: int
-    created_at: Optional[datetime]
+
+    organization_id: int
+    parent_id: Optional[int]
+
+    name: str
+    code: Optional[str]
+
+    manager_employee_id: Optional[int]
+
+    created_at: datetime
+    updated_at: Optional[datetime]
 
     class Config:
         from_attributes = True

@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str
     POSTGRES_DB: str
-    DATABASE_URL: str
+    DATABASE_URL: str | None = None
 
     JWT_SECRET: str
     JWT_ALGORITHM: str
