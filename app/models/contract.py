@@ -62,7 +62,7 @@ class Contract(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
     # Relationships
-    provider = relationship("Provider")
+    provider = relationship("Provider", back_populates="contracts")
     created_by_user = relationship("User")
     applications = relationship("Application", back_populates="contract")
 

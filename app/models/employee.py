@@ -50,7 +50,7 @@ class Employee(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
     # Relationships
-    organization = relationship("Organization")
+    organization = relationship("Organization", back_populates="employees")
     org_unit = relationship(
         "OrgUnit",
         back_populates="employees",

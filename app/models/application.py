@@ -79,9 +79,9 @@ class Application(Base):
 
     # Relationships
     requested_by_user = relationship("User")
-    organization = relationship("Organization")
+    organization = relationship("Organization", back_populates="applications")
     org_unit = relationship("OrgUnit")
-    contract = relationship("Contract")
+    contract = relationship("Contract", back_populates="applications")
     course = relationship("TrainingCourse")
     items = relationship(
         "ApplicationItem",
