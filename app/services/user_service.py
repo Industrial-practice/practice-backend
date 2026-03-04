@@ -12,10 +12,18 @@ def get_all_users(db: Session):
 
 
 def get_user_by_id(db: Session, user_id: int):
-    return user_repository.get_user(db, user_id)
+    user = user_repository.get_user(db, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
+
 
 
 def create_user(db: Session, user_data: UserCreate):
+    existing = db.query(User).filter(User.email == user_data.email).first()
+    if existing:
+        raise HTTPException(status_code=409, detail="Email already registered")
+
     data = user_data.model_dump()
 
     # достаем пароль
