@@ -12,7 +12,7 @@ REFRESH_TOKEN_EXPIRE_DAYS = settings.REFRESH_TOKEN_EXPIRE_DAYS
 
 
 def create_access_token(user):
-    role_code = user.user_roles[0].role.code
+    role_code = user.user_roles[0].role.code if user.user_roles else None
     now = datetime.now(timezone.utc)
     payload = {
         "sub": str(user.id),
