@@ -16,6 +16,10 @@ def create_contract(db: Session, contract: Contract):
     db.refresh(contract)
     return contract
 
+def update_contract(db: Session, contract: Contract):
+    db.commit()
+    db.refresh(contract)
+    return contract
 
 def delete_contract(db: Session, contract: Contract):
     db.delete(contract)

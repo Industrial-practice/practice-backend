@@ -16,6 +16,10 @@ def create_provider(db: Session, provider: Provider):
     db.refresh(provider)
     return provider
 
+def update_provider(db: Session, provider: Provider):
+    db.commit()
+    db.refresh(provider)
+    return provider
 
 def delete_provider(db: Session, provider: Provider):
     db.delete(provider)

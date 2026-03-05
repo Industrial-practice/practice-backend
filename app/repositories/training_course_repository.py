@@ -16,6 +16,10 @@ def create_training_course(db: Session, course: TrainingCourse):
     db.refresh(course)
     return course
 
+def update_training_course(db: Session, course: TrainingCourse):
+    db.commit()
+    db.refresh(course)
+    return course
 
 def delete_training_course(db: Session, course: TrainingCourse):
     db.delete(course)

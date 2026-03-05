@@ -16,6 +16,10 @@ def create_training_session(db: Session, session: TrainingSession):
     db.refresh(session)
     return session
 
+def update_training_session(db: Session, session: TrainingSession):
+    db.commit()
+    db.refresh(session)
+    return session
 
 def delete_training_session(db: Session, session: TrainingSession):
     db.delete(session)
