@@ -1,10 +1,15 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from app.core.dependencies import get_current_user
 from app.db.session import get_db
 from app.schemas.training_course import TrainingCourseCreate, TrainingCourseRead, TrainingCourseUpdate
 from app.services import training_course_service
 
-router = APIRouter(prefix="/training-courses", tags=["TrainingCourses"])
+router = APIRouter(
+    prefix="/training-courses",
+    tags=["TrainingCourses"],
+    dependencies=[Depends(get_current_user)],
+)
 
 
 @router.get("/", response_model=list[TrainingCourseRead])

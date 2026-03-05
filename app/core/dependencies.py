@@ -1,6 +1,5 @@
 from fastapi import Depends, HTTPException, Request
 import jwt
-import os
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
@@ -32,6 +31,9 @@ def get_current_user(
         if not user:
             raise HTTPException(status_code=401, detail="User not found")
 
+        if not user.is_active:
+            raise HTTPException(status_code=403, detail="Inactive account")
+
         return user
 
     except jwt.ExpiredSignatureError:
@@ -40,11 +42,10 @@ def get_current_user(
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
-def require_role(required_role: str):
-    def role_checker(current_user=Depends(get_current_user)):
-        token_role = current_user["role"]
-
-        if token_role != required_role:
+def require_role(*required_roles: str):
+    def role_checker(current_user: User = Depends(get_current_user)):
+        user_roles = {user_role.role.code for user_role in current_user.user_roles}
+        if not user_roles.intersection(set(required_roles)):
             raise HTTPException(status_code=403, detail="Forbidden")
 
         return current_user

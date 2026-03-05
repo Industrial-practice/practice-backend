@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
+from app.core.dependencies import get_current_user
 from app.db.session import get_db
 from app.schemas.employee import (
     EmployeeCreate,
@@ -9,7 +10,11 @@ from app.schemas.employee import (
 )
 from app.services import employee_service
 
-router = APIRouter(prefix="/employees", tags=["Employees"])
+router = APIRouter(
+    prefix="/employees",
+    tags=["Employees"],
+    dependencies=[Depends(get_current_user)],
+)
 
 
 @router.get("/", response_model=list[EmployeeRead])

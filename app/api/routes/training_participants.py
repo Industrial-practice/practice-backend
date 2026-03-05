@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from app.core.dependencies import get_current_user
 from app.db.session import get_db
 from app.schemas.training_participant import (
     TrainingParticipantCreate,
@@ -11,6 +12,7 @@ from app.services import training_participant_service
 router = APIRouter(
     prefix="/training-participants",
     tags=["TrainingParticipants"],
+    dependencies=[Depends(get_current_user)],
 )
 
 

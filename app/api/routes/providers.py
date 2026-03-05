@@ -1,10 +1,15 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from app.core.dependencies import get_current_user
 from app.db.session import get_db
 from app.schemas.provider import ProviderCreate, ProviderUpdate, ProviderRead
 from app.services import provider_service
 
-router = APIRouter(prefix="/providers", tags=["Providers"])
+router = APIRouter(
+    prefix="/providers",
+    tags=["Providers"],
+    dependencies=[Depends(get_current_user)],
+)
 
 
 @router.get("/", response_model=list[ProviderRead])

@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
+from app.core.dependencies import get_current_user
 from app.db.session import get_db
 from app.schemas.org_unit import (
     OrgUnitCreate,
@@ -9,7 +10,11 @@ from app.schemas.org_unit import (
 )
 from app.services import org_unit_service
 
-router = APIRouter(prefix="/org-units", tags=["OrgUnits"])
+router = APIRouter(
+    prefix="/org-units",
+    tags=["OrgUnits"],
+    dependencies=[Depends(get_current_user)],
+)
 
 
 @router.get("/", response_model=list[OrgUnitRead])

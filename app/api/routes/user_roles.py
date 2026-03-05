@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
+from app.core.dependencies import get_current_user
 from app.db.session import get_db
 from app.schemas.user_role import UserRoleCreate, UserRoleRead
 from app.services import user_role_service
@@ -8,6 +9,7 @@ from app.services import user_role_service
 router = APIRouter(
     prefix="/user-roles",
     tags=["UserRoles"],
+    dependencies=[Depends(get_current_user)],
 )
 
 

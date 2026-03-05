@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
+from app.core.dependencies import get_current_user
 from app.db.session import get_db
 from app.schemas.application_item import (
     ApplicationItemCreate,
@@ -9,7 +10,11 @@ from app.schemas.application_item import (
 )
 from app.services import application_item_service
 
-router = APIRouter(prefix="/application-items", tags=["ApplicationItems"])
+router = APIRouter(
+    prefix="/application-items",
+    tags=["ApplicationItems"],
+    dependencies=[Depends(get_current_user)],
+)
 
 
 @router.get("/", response_model=list[ApplicationItemRead])
