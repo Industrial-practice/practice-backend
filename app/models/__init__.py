@@ -12,3 +12,4 @@ from .application import Application
 from .application_item import ApplicationItem
 from .training_participant import TrainingParticipant
 from .refresh_token import RefreshToken
+from .trainer import Trainer

@@ -34,6 +34,7 @@ class Provider(Base):
     # Relationships
     contracts = relationship("Contract", back_populates="provider")
     courses = relationship("TrainingCourse", back_populates="provider")
+    trainers = relationship("Trainer", back_populates="provider")
 
     __table_args__ = (
         Index("ix_provider_active_name", "is_active", "name"),

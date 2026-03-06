@@ -6,3 +6,4 @@ from .contract import *
 from .training_course import *
 from .training_session import *
 from .application import *
+from .trainer import *

@@ -47,3 +47,19 @@ def update_application(
 @router.delete("/{application_id}")
 def delete_application(application_id: int, db: Session = Depends(get_db)):
     return application_service.delete_application(db, application_id)
+
+
+@router.post("/{application_id}/approve", response_model=ApplicationRead)
+def approve_application(
+    application_id: int,
+    db: Session = Depends(get_db)
+):
+    return application_service.approve_application(db, application_id)
+
+
+@router.post("/{application_id}/reject", response_model=ApplicationRead)
+def reject_application(
+    application_id: int,
+    db: Session = Depends(get_db)
+):
+    return application_service.reject_application(db, application_id)
