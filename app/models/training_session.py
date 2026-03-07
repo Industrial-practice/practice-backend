@@ -50,7 +50,6 @@ class TrainingSession(Base):
         Integer,
         ForeignKey("employees.id", ondelete="SET NULL"),
         nullable=True,
-        default=SessionType.seminar,
     )
 
     session_type = Column(
