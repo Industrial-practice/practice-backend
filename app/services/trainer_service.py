@@ -31,7 +31,7 @@ def update_trainer(db: Session, course_id: int, data: TrainerUpdate):
     return trainer_repository.update_trainer_course(db, course)
 
 
-def delete_trainer_course(db: Session, course_id: int):
+def delete_trainer(db: Session, course_id: int):
     course = trainer_repository.get_trainer_course(db, course_id)
     if not course:
         raise HTTPException(status_code=404, detail="Trainer not found")
