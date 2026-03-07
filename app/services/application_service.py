@@ -1,10 +1,16 @@
+from datetime import datetime, timezone
+
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 
 from app.models.application import Application
-from app.schemas.application import ApplicationCreate, ApplicationUpdate
+from app.schemas.application import ApplicationCreate, ApplicationStatus, ApplicationStatus, ApplicationUpdate
 from app.repositories import application_repository
 
+from datetime import datetime, timezone
+
+def utc_now():
+    return datetime.now(timezone.utc)
 
 def get_all_applications(db: Session):
     return application_repository.get_applications(db)
@@ -42,3 +48,27 @@ def delete_application(db: Session, application_id: int):
 
     application_repository.delete_application(db, application)
     return {"message": "Application deleted"}
+
+
+def approve_application(db: Session, application_id: int):
+    application = get_application_by_id(db, application_id)
+
+    application.status = ApplicationStatus.approved
+    application.approved_at = utc_now()
+
+    db.commit()
+    db.refresh(application)
+
+    return application
+
+
+def reject_application(db: Session, application_id: int):
+    application = get_application_by_id(db, application_id)
+
+    application.status = ApplicationStatus.rejected
+    application.rejected_at = utc_now()
+
+    db.commit()
+    db.refresh(application)
+
+    return application

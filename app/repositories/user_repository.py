@@ -2,12 +2,31 @@ from sqlalchemy.orm import Session
 from app.models.user import User
 
 
+from sqlalchemy.orm import joinedload
+from app.models.user_role import UserRole
+
+
 def get_users(db: Session):
-    return db.query(User).all()
+    return (
+        db.query(User)
+        .options(
+            joinedload(User.user_roles)
+            .joinedload(UserRole.role)
+        )
+        .all()
+    )
 
 
 def get_user(db: Session, user_id: int):
-    return db.query(User).filter(User.id == user_id).first()
+    return (
+        db.query(User)
+        .options(
+            joinedload(User.user_roles)
+            .joinedload(UserRole.role)
+        )
+        .filter(User.id == user_id)
+        .first()
+    )
 
 
 def create_user(db: Session, user: User):

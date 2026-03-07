@@ -59,3 +59,9 @@ def delete_participant(db: Session, participant_id: int):
 
     training_participant_repository.delete_participant(db, participant)
     return {"message": "Participant deleted"}
+
+from app.repositories import training_participant_repository
+
+
+def get_participants_by_course(db: Session, course_id: int):
+    return training_participant_repository.get_participants_by_course(db, course_id)

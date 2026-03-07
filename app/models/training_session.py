@@ -23,6 +23,12 @@ class SessionStatus(str, enum.Enum):
     cancelled = "cancelled"
 
 
+class SessionType(str, enum.Enum):
+    seminar = "seminar"
+    training = "training"
+    certification = "certification"
+
+
 class PricingType(str, enum.Enum):
     per_person = "per_person"
     per_group = "per_group"
@@ -44,6 +50,12 @@ class TrainingSession(Base):
         Integer,
         ForeignKey("employees.id", ondelete="SET NULL"),
         nullable=True,
+        default=SessionType.seminar,
+    )
+
+    session_type = Column(
+        Enum(SessionType, name="session_type_enum", native_enum=False),
+        nullable=False,
     )
 
     start_datetime = Column(DateTime, nullable=False)

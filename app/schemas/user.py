@@ -1,7 +1,7 @@
 from pydantic import BaseModel, EmailStr, Field, field_validator
 from typing import Optional
 from datetime import datetime
-
+from app.schemas.user_role import UserRoleRead
 
 class UserBase(BaseModel):
     email: EmailStr
@@ -29,6 +29,8 @@ class UserRead(BaseModel):
     last_login_at: Optional[datetime]
     created_at: datetime
     updated_at: Optional[datetime]
+
+    user_roles: list[UserRoleRead] = []
 
     class Config:
         from_attributes = True
