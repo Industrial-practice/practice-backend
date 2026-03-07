@@ -8,3 +8,4 @@ class LoginRequest(BaseModel):
 
 class AuthResponse(BaseModel):
     message: str
+    csrf_token: str | None = None

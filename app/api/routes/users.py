@@ -1,8 +1,17 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from app.core.dependencies import get_current_user
+from app.core.dependencies import (
+    get_current_org_unit_id,
+    get_current_user,
+    get_scoped_user,
+    is_employee,
+    is_head,
+    is_hr,
+)
 from app.db.session import get_db
+from app.models.employee import Employee
+from app.models.user import User
 from app.schemas.user import (
     UserCreate,
     UserRead,
@@ -18,13 +27,33 @@ router = APIRouter(
 
 
 @router.get("/", response_model=list[UserRead])
-def get_users(db: Session = Depends(get_db)):
-    return user_service.get_all_users(db)
+def get_users(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    if is_hr(current_user):
+        return user_service.get_all_users(db)
+
+    if is_head(current_user):
+        current_org_unit_id = get_current_org_unit_id(current_user)
+        if current_org_unit_id is None:
+            return []
+        return (
+            db.query(User)
+            .join(Employee, User.employee_id == Employee.id)
+            .filter(Employee.org_unit_id == current_org_unit_id)
+            .all()
+        )
+
+    if is_employee(current_user):
+        return [current_user]
+
+    return []
 
 
 @router.get("/{user_id}", response_model=UserRead)
-def get_user(user_id: int, db: Session = Depends(get_db)):
-    return user_service.get_user_by_id(db, user_id)
+def get_user(target_user: User = Depends(get_scoped_user)):
+    return target_user
 
 
 
@@ -34,11 +63,26 @@ def get_user(user_id: int, db: Session = Depends(get_db)):
 def update_user(
     user_id: int,
     user: UserUpdate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+    target_user: User = Depends(get_scoped_user),
 ):
+    if not is_hr(current_user):
+        if is_head(current_user) and target_user.id == current_user.id:
+            raise HTTPException(status_code=403, detail="Forbidden")
+        if is_employee(current_user) and target_user.id != current_user.id:
+            raise HTTPException(status_code=403, detail="Forbidden")
+
     return user_service.update_user(db, user_id, user)
 
 
 @router.delete("/{user_id}")
-def delete_user(user_id: int, db: Session = Depends(get_db)):
+def delete_user(
+    user_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    if not is_hr(current_user):
+        raise HTTPException(status_code=403, detail="Forbidden")
+
     return user_service.delete_user(db, user_id)

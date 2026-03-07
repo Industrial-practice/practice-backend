@@ -6,6 +6,7 @@ from app.core.config import settings
 from app.middlewares.hpp import HPPMiddleware
 from app.middlewares.rate_limit import RateLimiterMiddleware
 from app.middlewares.response_time import ResponseTimeMiddleware
+from app.middlewares.csrf import CSRFMiddleware
 from app.middlewares.security_headers import SecurityHeadersMiddleware
 
 
@@ -29,3 +30,10 @@ def add_middlewares(app: FastAPI) -> None:
 		whitelist=["SortBy", "Asc", "name", "age", "class"],
 	)
 	app.add_middleware(SecurityHeadersMiddleware)
+	app.add_middleware(
+		CSRFMiddleware,
+		exempt_paths=[
+			"/api/auth/login",
+			"/api/auth/register",
+		],
+	)
