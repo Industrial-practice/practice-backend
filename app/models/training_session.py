@@ -49,13 +49,13 @@ class TrainingSession(Base):
     trainer_id = Column(
         Integer,
         ForeignKey("employees.id", ondelete="SET NULL"),
-        nullable=True,
-        default=SessionType.seminar,
+        nullable=True
     )
-
+    
     session_type = Column(
         Enum(SessionType, name="session_type_enum", native_enum=False),
         nullable=False,
+        default=SessionType.seminar,
     )
 
     start_datetime = Column(DateTime, nullable=False)
