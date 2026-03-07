@@ -10,31 +10,37 @@ def get_all_trainers(db: Session):
 
 
 def get_trainer_by_id(db: Session, trainer_id: int):
-    course = trainer_repository.get_trainer_course(db, trainer_id)
-    if not course:
+    trainer = trainer_repository.get_trainer(db, trainer_id)
+
+    if not trainer:
         raise HTTPException(status_code=404, detail="Trainer not found")
-    return course
+
+    return trainer
 
 
-def create_trainer(db: Session, course_data: TrainerCreate):
-    course = Trainer(**course_data.model_dump())
-    return trainer_repository.create_trainer_course(db, course)
+def create_trainer(db: Session, trainer_data: TrainerCreate):
+    trainer = Trainer(**trainer_data.model_dump())
+    return trainer_repository.create_trainer(db, trainer)
 
-def update_trainer(db: Session, course_id: int, data: TrainerUpdate):
-    course = trainer_repository.get_trainer_course(db, course_id)
-    if not course:
+
+def update_trainer(db: Session, trainer_id: int, data: TrainerUpdate):
+    trainer = trainer_repository.get_trainer(db, trainer_id)
+
+    if not trainer:
         raise HTTPException(status_code=404, detail="Trainer not found")
 
     for key, value in data.model_dump(exclude_unset=True).items():
-        setattr(course, key, value)
+        setattr(trainer, key, value)
 
-    return trainer_repository.update_trainer_course(db, course)
+    return trainer_repository.update_trainer(db, trainer)
 
 
-def delete_trainer(db: Session, course_id: int):
-    course = trainer_repository.get_trainer_course(db, course_id)
-    if not course:
+def delete_trainer(db: Session, trainer_id: int):
+    trainer = trainer_repository.get_trainer(db, trainer_id)
+
+    if not trainer:
         raise HTTPException(status_code=404, detail="Trainer not found")
 
-    trainer_repository.delete_trainer_course(db, course)
+    trainer_repository.delete_trainer(db, trainer)
+
     return {"message": "Trainer was deleted"}
