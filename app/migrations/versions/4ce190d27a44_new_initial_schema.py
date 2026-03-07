@@ -1,8 +1,8 @@
-"""initial
+"""new initial schema
 
-Revision ID: d78bc68a4291
+Revision ID: 4ce190d27a44
 Revises: 
-Create Date: 2026-03-02 23:42:56.651018
+Create Date: 2026-03-07 22:42:36.704428
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision: str = 'd78bc68a4291'
+revision: str = '4ce190d27a44'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -84,6 +84,24 @@ def upgrade() -> None:
     op.create_index(op.f('ix_org_units_organization_id'), 'org_units', ['organization_id'], unique=False)
     op.create_index(op.f('ix_org_units_parent_id'), 'org_units', ['parent_id'], unique=False)
     op.create_index('ix_orgunit_org_parent', 'org_units', ['organization_id', 'parent_id'], unique=False)
+    op.create_table('trainers',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('provider_id', sa.Integer(), nullable=True),
+    sa.Column('full_name', sa.String(length=255), nullable=False),
+    sa.Column('email', sa.String(length=255), nullable=False),
+    sa.Column('phone', sa.String(length=50), nullable=True),
+    sa.Column('bio', sa.String(), nullable=True),
+    sa.Column('certifications_json', postgresql.JSONB(astext_type=sa.Text()), nullable=True),
+    sa.Column('is_active', sa.Boolean(), nullable=False),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
+    sa.Column('updated_at', sa.DateTime(timezone=True), nullable=True),
+    sa.ForeignKeyConstraint(['provider_id'], ['providers.id'], ondelete='SET NULL'),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index('idx_trainers_full_name', 'trainers', ['full_name'], unique=False)
+    op.create_index(op.f('ix_trainers_email'), 'trainers', ['email'], unique=True)
+    op.create_index(op.f('ix_trainers_is_active'), 'trainers', ['is_active'], unique=False)
+    op.create_index(op.f('ix_trainers_provider_id'), 'trainers', ['provider_id'], unique=False)
     op.create_table('training_courses',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('provider_id', sa.Integer(), nullable=False),
@@ -129,6 +147,7 @@ def upgrade() -> None:
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('course_id', sa.Integer(), nullable=False),
     sa.Column('trainer_id', sa.Integer(), nullable=True),
+    sa.Column('session_type', sa.Enum('seminar', 'training', 'certification', name='session_type_enum', native_enum=False), nullable=False),
     sa.Column('start_datetime', sa.DateTime(), nullable=False),
     sa.Column('end_datetime', sa.DateTime(), nullable=False),
     sa.Column('city', sa.String(length=255), nullable=True),
@@ -324,6 +343,11 @@ def downgrade() -> None:
     op.drop_index(op.f('ix_training_courses_is_active'), table_name='training_courses')
     op.drop_index('ix_course_provider_active', table_name='training_courses')
     op.drop_table('training_courses')
+    op.drop_index(op.f('ix_trainers_provider_id'), table_name='trainers')
+    op.drop_index(op.f('ix_trainers_is_active'), table_name='trainers')
+    op.drop_index(op.f('ix_trainers_email'), table_name='trainers')
+    op.drop_index('idx_trainers_full_name', table_name='trainers')
+    op.drop_table('trainers')
     op.drop_index('ix_orgunit_org_parent', table_name='org_units')
     op.drop_index(op.f('ix_org_units_parent_id'), table_name='org_units')
     op.drop_index(op.f('ix_org_units_organization_id'), table_name='org_units')
