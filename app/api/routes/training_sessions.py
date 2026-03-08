@@ -2,12 +2,13 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.core.dependencies import get_current_user
 from app.db.session import get_db
+from app.schemas.training_participant import TrainingParticipantRead
 from app.schemas.training_session import (
     TrainingSessionCreate,
     TrainingSessionRead,
     TrainingSessionUpdate,
 )
-from app.services import training_session_service
+from app.services import training_participant_service, training_session_service
 
 router = APIRouter(
     prefix="/training-sessions",
@@ -42,3 +43,10 @@ def update_training_session(session_id: int, session: TrainingSessionUpdate, db:
 @router.delete("/{session_id}")
 def delete_training_session(session_id: int, db: Session = Depends(get_db)):
     return training_session_service.delete_training_session(db, session_id)
+
+@router.get("/{session_id}/participants", response_model=list[TrainingParticipantRead])
+def get_session_participants(
+    session_id: int,
+    db: Session = Depends(get_db),
+):
+    return training_participant_service.get_participants_by_session(db, session_id)

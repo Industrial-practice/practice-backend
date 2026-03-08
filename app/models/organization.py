@@ -41,9 +41,23 @@ class Organization(Base):
     parent = relationship("Organization", remote_side=[id], backref="children")
 
     # Relationships
-    employees = relationship("Employee", back_populates="organization")
-    org_units = relationship("OrgUnit", back_populates="organization")
-    applications = relationship("Application", back_populates="organization")
+    employees = relationship(
+        "Employee",
+        back_populates="organization",
+        passive_deletes=True
+    )
+
+    org_units = relationship(
+        "OrgUnit",
+        back_populates="organization",
+        passive_deletes=True
+    )
+
+    applications = relationship(
+        "Application",
+        back_populates="organization",
+        passive_deletes=True
+    )
 
     __table_args__ = (
         Index("ix_org_active_name", "is_active", "name"),
