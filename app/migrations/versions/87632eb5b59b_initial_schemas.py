@@ -1,8 +1,8 @@
-"""newest initial migration
+"""initial schemas
 
-Revision ID: 4fb4cacdb0a0
+Revision ID: 87632eb5b59b
 Revises: 
-Create Date: 2026-03-08 00:35:19.527404
+Create Date: 2026-03-08 21:32:44.753450
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision: str = '4fb4cacdb0a0'
+revision: str = '87632eb5b59b'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -184,6 +184,7 @@ def upgrade() -> None:
     op.create_index(op.f('ix_users_is_active'), 'users', ['is_active'], unique=False)
     op.create_table('contracts',
     sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('organization_id', sa.Integer(), nullable=False),
     sa.Column('provider_id', sa.Integer(), nullable=False),
     sa.Column('contract_number', sa.String(length=100), nullable=False),
     sa.Column('title', sa.String(length=255), nullable=True),
@@ -197,11 +198,13 @@ def upgrade() -> None:
     sa.Column('updated_at', sa.DateTime(timezone=True), nullable=True),
     sa.CheckConstraint('end_date > start_date', name='chk_contract_dates'),
     sa.ForeignKeyConstraint(['created_by_user_id'], ['users.id'], ondelete='SET NULL'),
+    sa.ForeignKeyConstraint(['organization_id'], ['organizations.id'], ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['provider_id'], ['providers.id'], ondelete='RESTRICT'),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('provider_id', 'contract_number', name='uq_provider_contract_number')
     )
     op.create_index('ix_contract_status_provider', 'contracts', ['status', 'provider_id'], unique=False)
+    op.create_index(op.f('ix_contracts_organization_id'), 'contracts', ['organization_id'], unique=False)
     op.create_index(op.f('ix_contracts_provider_id'), 'contracts', ['provider_id'], unique=False)
     op.create_index(op.f('ix_contracts_status'), 'contracts', ['status'], unique=False)
     op.create_table('refresh_tokens',
@@ -323,6 +326,7 @@ def downgrade() -> None:
     op.drop_table('refresh_tokens')
     op.drop_index(op.f('ix_contracts_status'), table_name='contracts')
     op.drop_index(op.f('ix_contracts_provider_id'), table_name='contracts')
+    op.drop_index(op.f('ix_contracts_organization_id'), table_name='contracts')
     op.drop_index('ix_contract_status_provider', table_name='contracts')
     op.drop_table('contracts')
     op.drop_index(op.f('ix_users_is_active'), table_name='users')

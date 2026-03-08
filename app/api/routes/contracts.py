@@ -18,32 +18,80 @@ router = APIRouter(
 
 
 @router.get("/", response_model=list[ContractRead])
-def get_contracts(db: Session = Depends(get_db)):
-    return contract_service.get_all_contracts(db)
+def get_contracts(
+    db: Session = Depends(get_db),
+    user = Depends(get_current_user)
+):
+
+    organization_id = user.employee.organization_id
+
+    return contract_service.get_all_contracts(
+        db,
+        organization_id
+    )
 
 
 @router.get("/{contract_id}", response_model=ContractRead)
-def get_contract(contract_id: int, db: Session = Depends(get_db)):
-    return contract_service.get_contract_by_id(db, contract_id)
+def get_contract(
+    contract_id: int,
+    db: Session = Depends(get_db),
+    user = Depends(get_current_user)
+):
+    organization_id = user.employee.organization_id
+
+    return contract_service.get_contract_by_id(
+        db,
+        contract_id,
+        organization_id
+    )
 
 
 @router.post("/", response_model=ContractRead)
 def create_contract(
     contract: ContractCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    user = Depends(get_current_user)
 ):
-    return contract_service.create_contract(db, contract)
+
+    organization_id = user.employee.organization_id
+
+    return contract_service.create_contract(
+        db,
+        organization_id,
+        contract,
+        user.id
+    )
 
 
 @router.put("/{contract_id}", response_model=ContractRead)
 def update_contract(
     contract_id: int,
     contract: ContractUpdate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    user = Depends(get_current_user)
 ):
-    return contract_service.update_contract(db, contract_id, contract)
+
+    organization_id = user.employee.organization_id
+
+    return contract_service.update_contract(
+        db,
+        contract_id,
+        organization_id,
+        contract
+    )
 
 
 @router.delete("/{contract_id}")
-def delete_contract(contract_id: int, db: Session = Depends(get_db)):
-    return contract_service.delete_contract(db, contract_id)
+def delete_contract(
+    contract_id: int,
+    db: Session = Depends(get_db),
+    user = Depends(get_current_user)
+):
+
+    organization_id = user.employee.organization_id
+
+    return contract_service.delete_contract(
+        db,
+        contract_id,
+        organization_id
+    )

@@ -41,6 +41,12 @@ class Organization(Base):
     parent = relationship("Organization", remote_side=[id], backref="children")
 
     # Relationships
+
+    contracts = relationship(
+        "Contract",
+        back_populates="organization",
+        passive_deletes=True
+    )
     employees = relationship(
         "Employee",
         back_populates="organization",

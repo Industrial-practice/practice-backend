@@ -14,6 +14,7 @@ class ContractStatus(str, Enum):
 
 
 class ContractBase(BaseModel):
+    organization_id: int
     provider_id: int
     contract_number: str = Field(..., max_length=100)
     title: Optional[str] = Field(None, max_length=255)
@@ -44,8 +45,14 @@ class ContractBase(BaseModel):
         return self
 
 
-class ContractCreate(ContractBase):
-    pass
+class ContractCreate(BaseModel):
+    provider_id: int
+    contract_number: str
+    title: Optional[str]
+    start_date: datetime
+    end_date: datetime
+    currency: str
+    budget_limit: Decimal
 
 class ContractUpdate(BaseModel):
     provider_id: Optional[int] = None
@@ -74,6 +81,7 @@ class ContractUpdate(BaseModel):
 
 class ContractRead(BaseModel):
     id: int
+    organization_id: int
     provider_id: int
     contract_number: str
     title: Optional[str]

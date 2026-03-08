@@ -28,11 +28,18 @@ class Contract(Base):
 
     id = Column(Integer, primary_key=True)
 
+    organization_id = Column(
+        Integer,
+        ForeignKey("organizations.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True
+    )
+
     provider_id = Column(
         Integer,
         ForeignKey("providers.id", ondelete="RESTRICT"),
         nullable=False,
-        index=True,
+        index=True
     )
 
     contract_number = Column(String(100), nullable=False)
@@ -62,6 +69,7 @@ class Contract(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
     # Relationships
+    organization = relationship("Organization", back_populates="contracts")
     provider = relationship("Provider", back_populates="contracts")
     created_by_user = relationship("User")
     applications = relationship("Application", back_populates="contract")
