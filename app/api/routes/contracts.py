@@ -25,10 +25,22 @@ def get_contracts(
 
     organization_id = user.employee.organization_id
 
-    return contract_service.get_all_contracts(
+    return contract_service.get_contracts_by_org_id(
         db,
         organization_id
     )
+
+
+@router.get("/all", response_model=list[ContractRead])
+def get_all_contracts(
+    db: Session = Depends(get_db),
+):
+
+
+    return contract_service.get_all_contracts(
+        db
+    )
+
 
 
 @router.get("/{contract_id}", response_model=ContractRead)

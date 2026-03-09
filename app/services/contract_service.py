@@ -6,12 +6,13 @@ from app.schemas.contract import ContractCreate, ContractUpdate
 from app.repositories import contract_repository, provider_repository
 
 
-def get_all_contracts(db: Session, organization_id: int):
+def get_contracts_by_org_id(db: Session, organization_id: int):
 
     return db.query(Contract).filter(
         Contract.organization_id == organization_id
     ).all()
-
+def get_all_contracts(db: Session):
+    return db.query(Contract).all()
 
 def get_contract_by_id(
     db: Session,
