@@ -1,8 +1,10 @@
 from datetime import datetime, timezone
 
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from fastapi import HTTPException
 
+from app.models import ApplicationItem, TrainingParticipant
 from app.models.application import Application
 from app.schemas.application import ApplicationCreate, ApplicationStatus, ApplicationStatus, ApplicationUpdate
 from app.repositories import application_repository
@@ -53,12 +55,67 @@ def delete_application(db: Session, application_id: int):
 def approve_application(db: Session, application_id: int):
     application = get_application_by_id(db, application_id)
 
+    if application.status != ApplicationStatus.pending:
+        raise HTTPException(
+            status_code=400,
+            detail="Application cannot be approved"
+        )
+
+    if not application.contract_id:
+        raise HTTPException(
+            status_code=400,
+            detail="Application has no contract"
+        )
+
+    contract = application.contract
+
+    total_amount = db.query(
+        func.coalesce(func.sum(ApplicationItem.price_amount), 0)
+    ).filter(
+        ApplicationItem.application_id == application_id
+    ).scalar()
+
+    for item in application.items:
+        if item.currency != contract.currency:
+            raise HTTPException(
+                status_code=400,
+                detail="Currency mismatch between item and contract"
+            )
+
+    if contract.budget_limit < total_amount:
+        raise HTTPException(
+            status_code=400,
+            detail="Contract budget exceeded"
+        )
+
+    contract.budget_limit -= total_amount
+
+    for item in application.items:
+
+        item.status = "approved"
+
+        if item.session_id:
+
+            existing = db.query(TrainingParticipant).filter(
+                TrainingParticipant.session_id == item.session_id,
+                TrainingParticipant.employee_id == item.employee_id
+            ).first()
+
+            if not existing:
+                participant = TrainingParticipant(
+                    session_id=item.session_id,
+                    employee_id=item.employee_id
+                )
+
+                db.add(participant)
+
+
     application.status = ApplicationStatus.approved
     application.approved_at = utc_now()
 
     db.commit()
-    db.refresh(application)
 
+    db.refresh(application)
     return application
 
 
