@@ -56,7 +56,7 @@ def refresh(request: Request, response: Response, db: Session = Depends(get_db))
         value=access,
         httponly=True,
         secure=True,
-        samesite="strict",
+        samesite="none",
     )
 
     response.set_cookie(
@@ -64,7 +64,7 @@ def refresh(request: Request, response: Response, db: Session = Depends(get_db))
         value=refresh_new,
         httponly=True,
         secure=True,
-        samesite="strict",
+        samesite="none",
     )
 
     return {"message": "Token refreshed"}
