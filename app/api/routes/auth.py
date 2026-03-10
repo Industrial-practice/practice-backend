@@ -30,7 +30,7 @@ def login(data: LoginRequest, response: Response, db: Session = Depends(get_db))
         value=access_token,
         httponly=True,
         secure=True,
-        samesite="strict",
+        samesite="none",
     )
 
     response.set_cookie(
@@ -38,7 +38,7 @@ def login(data: LoginRequest, response: Response, db: Session = Depends(get_db))
         value=refresh_token,
         httponly=True,
         secure=True,
-        samesite="strict",
+        samesite="none",
     )
 
     return {"message": "Login successful"}
